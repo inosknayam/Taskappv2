@@ -15,7 +15,7 @@ export default function CookieBanner() {
 
   if (!open) return null;
   return (
-    <section className="cookie-banner" role="region" aria-label="Cookie consent">
+    <section className="cookie-banner" aria-label="Cookie consent">
       <p>
         We use essential cookies to keep you logged in. With your permission we also use privacy-friendly
         analytics to improve TaskApp. See our <Link to="/privacy#cookies">Privacy Policy</Link>.

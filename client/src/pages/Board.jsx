@@ -161,9 +161,11 @@ export default function Board() {
       {error && <div className="container"><FormAlert message={error} /></div>}
       <p className="visually-hidden" aria-live="polite">{announcement}</p>
 
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- mouse drag and drop; keyboard/touch users use the Move controls */}
       <ol className="lists" onDragOver={onDragOver} onDrop={onDropOnBoard} aria-label="Lists">
         {board.lists.map((list, listIndex) => (
           <li key={list.id} className="list" data-list data-id={list.id}>
+            {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions -- drag handle; keyboard/touch users use Move left/right in the list menu */}
             <div className="list-header" draggable onDragStart={(e) => onListDragStart(e, list)} onDragEnd={() => { drag.current = null; }}>
               <h2 className="list-title"><InlineEdit value={list.title} label="List title" maxLength={100} onSave={(t) => renameList(list, t)} /></h2>
               <details className="list-menu">
@@ -175,10 +177,12 @@ export default function Board() {
                 </div>
               </details>
             </div>
+            {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- mouse drag and drop; keyboard/touch users use the Move controls */}
             <ul className="cards" onDragOver={onDragOver} onDrop={(e) => onDropOnList(e, list)} aria-label={`Cards in ${list.title}`}>
               {list.cards.filter(visible).map((card) => {
                 const done = card.checklist.filter((i) => i.done).length;
                 return (
+                  // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- mouse drag and drop; keyboard/touch users use the Move controls
                   <li key={card.id} data-card data-id={card.id} draggable onDragStart={(e) => onCardDragStart(e, card)} onDragEnd={() => { drag.current = null; }}>
                     <button type="button" className="card" onClick={() => setOpenCardId(card.id)}>
                       <LabelDots labels={card.labels} />

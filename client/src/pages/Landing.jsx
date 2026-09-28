@@ -34,7 +34,6 @@ export default function Landing() {
             alt="A TaskApp board with three columns, To do, Doing and Done, each holding task cards"
             width="560"
             height="380"
-            fetchpriority="high"
           />
         </div>
       </section>

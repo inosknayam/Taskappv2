@@ -10,7 +10,7 @@
   - SVG: 20 KB;
   - PNG: 100 KB;
   - JPEG, WebP or AVIF: 150 KB.
-- Every `<img>` has explicit `width` and `height`, which prevents layout shift (CLS). The above-the-fold hero uses `fetchpriority="high"`. Add `loading="lazy"` to any image below the fold.
+- Every `<img>` has explicit `width` and `height`, which prevents layout shift (CLS). Add `loading="lazy"` to any image below the fold.
 - **Adding photos:** export them as WebP or AVIF at quality 75–80, no wider than 2× their display size. Use `npx @squoosh/cli` or `sharp` if needed.
 
 ## Page load speed
