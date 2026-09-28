@@ -11,6 +11,8 @@
 | Board / list | title 1–100 chars; colour from the allowed list |
 | Card | title 1–200; description ≤ 5000; due date `YYYY-MM-DD`; labels from the allowed set; ≤ 50 checklist items |
 | Contact | name 1–60; valid email; message 10–2000 chars |
+| Forgot password | valid email |
+| Reset password | same password rules as sign up; confirmation must match |
 
 - **Client side** (`client/src/lib/useFormState.js`, `FormField.jsx`):
   - fields are validated on blur and on submit, with inline error messages;
@@ -21,13 +23,14 @@
 
 ## Spam protection
 
-Signup and contact forms use three layers, and login is rate-limited:
+Signup, contact and forgot-password forms use three layers, and login is rate-limited:
 
 1. **Honeypot field.** An invisible `website` input (`Honeypot.jsx`) is hidden from people and screen readers, but naive bots fill it in. The server rejects any submission where it isn't empty.
 2. **Time trap.** The form sends the time it was rendered (`formStartedAt`). Submissions faster than 2 s (signup) or 3 s (contact) are rejected, because humans aren't that fast.
 3. **Rate limiting** per IP (`server/src/security.js › rateLimiter`):
    - signup and login: 20 attempts per 15 minutes;
    - contact: 5 per hour;
+   - forgot password: 5 per hour; reset password: 20 per 15 minutes;
    - the server returns **429** with a `Retry-After` header.
 
 All three are covered by `server/test/api.test.js`.

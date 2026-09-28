@@ -20,7 +20,7 @@ test('HTTPS is enforced in production and HSTS is sent', async () => {
 
 test('session tokens are signed and tamper-proof', () => {
   const token = createSessionToken(7, 'secret');
-  assert.equal(readSessionToken(token, 'secret'), 7);
+  assert.equal(readSessionToken(token, 'secret').uid, 7);
   assert.equal(readSessionToken(token, 'other'), null);
   assert.equal(readSessionToken(token.replace(/^./, 'A'), 'secret'), null);
 });

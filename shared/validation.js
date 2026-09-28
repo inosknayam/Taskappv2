@@ -24,14 +24,18 @@ export function validateEmail(errors, value) {
   else if (value.length > 254 || !EMAIL_RE.test(value)) errors.email = 'Enter a valid email address.';
 }
 
+export function validatePassword(errors, password, field = 'password') {
+  if (password.length < 8) errors[field] = 'Password must be at least 8 characters.';
+  else if (password.length > 128) errors[field] = 'Password must be at most 128 characters.';
+  else if (!/[A-Za-z]/.test(password) || !/\d/.test(password)) errors[field] = 'Password must contain a letter and a number.';
+}
+
 export function validateSignup(input = {}) {
   const data = { name: str(input.name), email: str(input.email).toLowerCase(), password: typeof input.password === 'string' ? input.password : '' };
   const errors = {};
   length(errors, 'name', data.name, 1, 60, 'Name');
   validateEmail(errors, data.email);
-  if (data.password.length < 8) errors.password = 'Password must be at least 8 characters.';
-  else if (data.password.length > 128) errors.password = 'Password must be at most 128 characters.';
-  else if (!/[A-Za-z]/.test(data.password) || !/\d/.test(data.password)) errors.password = 'Password must contain a letter and a number.';
+  validatePassword(errors, data.password);
   if (input.acceptTerms !== true) errors.acceptTerms = 'You must accept the Terms and Privacy Policy.';
   return result(data, errors);
 }
@@ -103,5 +107,25 @@ export function validateContact(input = {}) {
   length(errors, 'name', data.name, 1, 60, 'Name');
   validateEmail(errors, data.email);
   length(errors, 'message', data.message, 10, 2000, 'Message');
+  return result(data, errors);
+}
+
+export function validateForgotPassword(input = {}) {
+  const data = { email: str(input.email).toLowerCase() };
+  const errors = {};
+  validateEmail(errors, data.email);
+  return result(data, errors);
+}
+
+export function validateResetPassword(input = {}) {
+  const data = {
+    token: str(input.token),
+    password: typeof input.password === 'string' ? input.password : '',
+    confirmPassword: typeof input.confirmPassword === 'string' ? input.confirmPassword : '',
+  };
+  const errors = {};
+  if (!/^[A-Za-z0-9_-]{20,200}$/.test(data.token)) errors.token = 'This reset link is invalid. Please request a new one.';
+  validatePassword(errors, data.password);
+  if (!errors.password && data.confirmPassword !== data.password) errors.confirmPassword = 'Passwords do not match.';
   return result(data, errors);
 }

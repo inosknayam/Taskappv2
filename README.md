@@ -74,6 +74,7 @@ All endpoints are under `/api`, send and receive JSON, and use cookie sessions. 
 |---|---|---|
 | POST | `/auth/signup`, `/auth/login`, `/auth/logout` | account |
 | GET / DELETE | `/auth/me` | current user / delete account |
+| POST | `/auth/forgot-password`, `/auth/reset-password` | email a reset link / set a new password |
 | GET / POST | `/boards` | list / create (creates To do, Doing, Done) |
 | GET / PATCH / DELETE | `/boards/:id` | board with lists and cards |
 | POST | `/boards/:id/lists` | add list |
