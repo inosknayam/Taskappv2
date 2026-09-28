@@ -45,6 +45,29 @@ Set on every response (`securityHeaders`):
 - Login runs a dummy hash for unknown emails, so response timing doesn't reveal which accounts exist. The error message is always "Incorrect email or password".
 - Every board, list and card query checks that the item belongs to the logged-in user. Other users' IDs return 404.
 
+## Password reset
+
+- **Flow:**
+  1. `POST /api/auth/forgot-password` emails a link to `/reset-password?token=…`.
+  2. `POST /api/auth/reset-password` sets the new password and logs the user in.
+- **Tokens:**
+  - each token is 32 random bytes;
+  - only its **SHA-256 hash** is stored (`password_resets` table), so a database leak doesn't expose usable links;
+  - links expire after **1 hour** and are **single use**, and requesting a new link cancels older ones.
+- **No account enumeration:** the forgot-password endpoint always returns the same message, whether or not the email has an account.
+- **Old sessions are revoked:** a reset updates `users.password_changed_at`, and any session cookie issued before that is rejected. This means a reset logs out an attacker who had the old password.
+- **Token kept out of logs and analytics:**
+  - the reset page removes the token from the address bar as soon as it loads, and robots.txt disallows `/reset-password`;
+  - analytics only records the path, never the query string.
+- **Rate limits and spam:**
+  - forgot-password: 5 requests per IP per hour;
+  - reset: 20 attempts per IP every 15 minutes;
+  - the forgot form also has the honeypot and time trap.
+- **Email delivery:** `server/src/mailer.js` is a dependency-free SMTP client.
+  - It uses implicit TLS on port 465, or STARTTLS on 587.
+  - It refuses to send credentials over an unencrypted connection.
+  - Configure it with `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` and `MAIL_FROM`, all **server-only** values. Without `SMTP_HOST`, emails are printed to the server console.
+
 ## CSRF
 
 - The cookie is `SameSite=Lax`.

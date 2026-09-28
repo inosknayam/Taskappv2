@@ -50,6 +50,25 @@ Add these in the app's **Environment variables** section. Some are needed during
 - **Don't set `PORT`.** Hostinger normally sets it, and the app reads it automatically.
 - **Changing a `VITE_PUBLIC_` variable** only takes effect after a **redeploy**, because these values are baked into the build.
 
+### Email for password resets
+
+Password-reset emails are sent through your Hostinger mailbox.
+
+1. In hPanel go to **Emails** and create a mailbox, e.g. `no-reply@yourdomain.com`.
+2. Add these environment variables:
+
+| Name | Value |
+|---|---|
+| `SMTP_HOST` | `smtp.hostinger.com` |
+| `SMTP_PORT` | `465` |
+| `SMTP_USER` | `no-reply@yourdomain.com` (the full address) |
+| `SMTP_PASS` | the mailbox password (**secret**) |
+| `MAIL_FROM` | `TaskApp <no-reply@yourdomain.com>` |
+
+- **Links in emails** use `VITE_PUBLIC_SITE_URL`.
+- **If SMTP isn't configured**, reset emails are only written to the app log, and users won't receive them.
+- **Deliverability:** check that the domain's email DNS records (SPF, DKIM) are set up in hPanel, so emails don't go to spam.
+
 ## 4. Keep the database safe across deploys
 
 The database is a single file. By default it's stored inside the app folder (`server/data/taskapp.db`), and **a redeploy may replace that folder and delete all accounts and boards.**
@@ -89,6 +108,7 @@ The database is a single file. By default it's stored inside the app folder (`se
 - [ ] Visit `https://tasks.yourdomain.com/sitemap.xml` and `/robots.txt`. They should list your real domain.
 - [ ] Submit the sitemap in Google Search Console.
 - [ ] Paste your URL into opengraph.xyz to check the social preview image.
+- [ ] Use **Forgot your password?** on the login page and check the email arrives and the link works.
 - [ ] Try a made-up URL such as `/xyz`. You should see the custom 404 page.
 - [ ] On a first visit in a private window, the cookie banner should appear.
 - [ ] If analytics is enabled, click **Accept analytics** and check Plausible's realtime view.
@@ -104,4 +124,5 @@ The database is a single file. By default it's stored inside the app folder (`se
 | "Too many redirects" | See step 6.3 (`FORCE_HTTPS=false` plus hPanel's Force HTTPS) |
 | Accounts disappear after a deploy | `DATABASE_FILE` is inside the app folder. See step 4 |
 | Social image or canonical links point to localhost | `VITE_PUBLIC_SITE_URL` wasn't set before the build. Set it and redeploy |
+| Password-reset email never arrives | Check the SMTP variables and the app log for `[mail]` errors. Check SPF/DKIM in hPanel → Emails, and look in the spam folder |
 | Login works but you're logged out immediately | The site is being opened over `http://`. Make sure SSL is active and you're using `https://` |

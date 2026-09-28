@@ -30,6 +30,7 @@ export default function Login() {
         <FormAlert message={f.formError} />
         <FormField label="Email" name="email" type="email" autoComplete="email" value={f.values.email} onChange={f.onChange} onBlur={f.onBlur} error={f.errors.email} required />
         <FormField label="Password" name="password" type="password" autoComplete="current-password" value={f.values.password} onChange={f.onChange} error={f.errors.password} required />
+        <p className="forgot-link"><Link to="/forgot-password">Forgot your password?</Link></p>
         <button type="submit" className="btn btn-primary btn-block" disabled={f.submitting}>{f.submitting ? 'Logging in…' : 'Log in'}</button>
       </form>
       <p className="auth-switch">New to TaskApp? <Link to="/signup">Create an account</Link></p>

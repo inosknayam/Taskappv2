@@ -26,7 +26,15 @@ export const config = {
   host: env.HOST || (isProd ? '0.0.0.0' : '127.0.0.1'),
   sessionSecret: env.SESSION_SECRET || 'dev-only-insecure-secret-change-me-please',
   databaseFile: env.DATABASE_FILE || path.join(ROOT, 'server/data/taskapp.db'),
-  siteUrl: (env.SITE_URL || `http://localhost:5173`).replace(/\/$/, ''),
+  // Public URL used in emails (password-reset links). Falls back to the frontend's public URL.
+  siteUrl: (env.SITE_URL || env.VITE_PUBLIC_SITE_URL || 'http://localhost:5173').replace(/\/$/, ''),
+  smtp: {
+    host: env.SMTP_HOST || '',
+    port: Number(env.SMTP_PORT) || 465,
+    user: env.SMTP_USER || '',
+    pass: env.SMTP_PASS || '',
+    from: env.MAIL_FROM || env.SMTP_USER || '',
+  },
   // HTTPS is enforced in production unless explicitly disabled (e.g. local prod smoke tests).
   forceHttps: isProd && env.FORCE_HTTPS !== 'false',
   clientDist: path.join(ROOT, 'client/dist'),

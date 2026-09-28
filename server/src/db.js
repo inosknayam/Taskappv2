@@ -46,10 +46,21 @@ export function openDatabase(file) {
       message TEXT NOT NULL,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+    CREATE TABLE IF NOT EXISTS password_resets (
+      id INTEGER PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      token_hash TEXT NOT NULL UNIQUE,
+      expires_at INTEGER NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE INDEX IF NOT EXISTS idx_password_resets_user ON password_resets(user_id);
     CREATE INDEX IF NOT EXISTS idx_boards_user ON boards(user_id);
     CREATE INDEX IF NOT EXISTS idx_lists_board ON lists(board_id, position);
     CREATE INDEX IF NOT EXISTS idx_cards_list ON cards(list_id, position);
   `);
+  // Migration: sessions issued before this time (ms) are rejected (set when the password changes).
+  const userColumns = db.prepare('PRAGMA table_info(users)').all().map((c) => c.name);
+  if (!userColumns.includes('password_changed_at')) db.exec('ALTER TABLE users ADD COLUMN password_changed_at INTEGER NOT NULL DEFAULT 0');
   return db;
 }
 

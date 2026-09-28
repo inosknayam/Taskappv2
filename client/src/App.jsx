@@ -8,6 +8,8 @@ import { trackPageview } from './lib/analytics.js';
 // Route-level code splitting keeps the landing page bundle small.
 const Login = lazy(() => import('./pages/Login.jsx'));
 const Signup = lazy(() => import('./pages/Signup.jsx'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword.jsx'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword.jsx'));
 const Boards = lazy(() => import('./pages/Boards.jsx'));
 const Board = lazy(() => import('./pages/Board.jsx'));
 const Contact = lazy(() => import('./pages/Contact.jsx'));
@@ -34,6 +36,8 @@ export default function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />

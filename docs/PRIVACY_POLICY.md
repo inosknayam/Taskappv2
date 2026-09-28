@@ -22,7 +22,7 @@ We do not sell your personal data, and we do not use it for advertising.
 
 - To provide the service and your account: **performance of a contract**.
 - To keep the service secure and prevent spam and abuse: **legitimate interests**.
-- To answer your messages: **legitimate interests**.
+- To answer your messages and send service emails such as password-reset links: **legitimate interests**.
 - To measure and improve TaskApp with analytics: **your consent**, which you can withdraw at any time.
 
 ## Cookies and analytics {#cookies}
@@ -38,11 +38,12 @@ If you click **Accept analytics** in the cookie banner we load **Plausible Analy
 
 - Account data and content: until you delete your account.
 - Contact messages: up to 12 months.
+- Password-reset links: deleted when used, or expired after 1 hour.
 - Analytics data: aggregated and anonymous, kept for up to 24 months.
 
 ## Sharing your data
 
-We share data only with service providers that help us run TaskApp, such as our hosting provider and (with consent) Plausible Analytics. They process data on our instructions and under data-processing agreements. We may disclose data if the law requires it.
+We share data only with service providers that help us run TaskApp, such as our hosting and email provider and (with consent) Plausible Analytics. They process data on our instructions and under data-processing agreements. We may disclose data if the law requires it.
 
 ## International transfers
 

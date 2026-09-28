@@ -12,7 +12,7 @@ const COMPRESSIBLE = new Set(['.html', '.js', '.css', '.json', '.svg', '.txt', '
 
 // Routes the React app knows about. Anything else gets the app shell with a 404 status,
 // so the custom 404 page renders and search engines see a real 404.
-const SPA_ROUTES = [/^\/$/, /^\/(login|signup|privacy|terms|contact|boards)\/?$/, /^\/boards\/\d+\/?$/];
+const SPA_ROUTES = [/^\/$/, /^\/(login|signup|privacy|terms|contact|boards|forgot-password|reset-password)\/?$/, /^\/boards\/\d+\/?$/];
 
 function send(req, res, file, status, cacheControl) {
   const ext = path.extname(file);

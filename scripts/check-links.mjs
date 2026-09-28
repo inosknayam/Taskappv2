@@ -5,7 +5,7 @@ import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs';
 import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
-const ROUTES = [/^\/$/, /^\/(login|signup|contact|privacy|terms|boards)$/, /^\/boards\/:?\w+$/];
+const ROUTES = [/^\/$/, /^\/(login|signup|contact|privacy|terms|boards|forgot-password|reset-password)$/, /^\/boards\/:?\w+$/];
 const problems = [];
 const external = new Set();
 const walk = (dir) => (existsSync(dir) ? readdirSync(dir).flatMap((f) => {

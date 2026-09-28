@@ -1,4 +1,4 @@
-import { scryptSync, randomBytes, timingSafeEqual, createHmac } from 'node:crypto';
+import { scryptSync, randomBytes, timingSafeEqual, createHmac, createHash } from 'node:crypto';
 import { HttpError, parseCookies, serializeCookie } from './http.js';
 
 export const SESSION_COOKIE = 'taskapp_session';
@@ -30,7 +30,7 @@ function sign(data, secret) {
 }
 
 export function createSessionToken(userId, secret) {
-  const payload = Buffer.from(JSON.stringify({ uid: userId, exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS })).toString('base64url');
+  const payload = Buffer.from(JSON.stringify({ uid: userId, iat: Date.now(), exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS })).toString('base64url');
   return `${payload}.${sign(payload, secret)}`;
 }
 
@@ -44,7 +44,7 @@ export function readSessionToken(token, secret) {
   try {
     const data = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
     if (typeof data.uid !== 'number' || data.exp < Date.now() / 1000) return null;
-    return data.uid;
+    return { uid: data.uid, iat: Number(data.iat) || 0 };
   } catch {
     return null;
   }
@@ -58,8 +58,18 @@ export function clearSessionCookie({ secure }) {
   return serializeCookie(SESSION_COOKIE, '', { maxAge: 0, secure });
 }
 
-export function currentUserId(req, secret) {
+export function currentSession(req, secret) {
   return readSessionToken(parseCookies(req.headers.cookie)[SESSION_COOKIE], secret);
+}
+
+// Random single-use token for password-reset links. Only its SHA-256 hash is stored.
+export function createResetToken() {
+  const token = randomBytes(32).toString('base64url');
+  return { token, hash: hashResetToken(token) };
+}
+
+export function hashResetToken(token) {
+  return createHash('sha256').update(token).digest('hex');
 }
 
 export function requireUser(ctx) {
