@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 380" role="img" aria-hidden="true">
+<rect width="560" height="380" rx="14" fill="#1d4ed8"/>
+<text x="24" y="42" fill="#fff" font-family="system-ui,sans-serif" font-size="20" font-weight="700">Website launch</text>
+<g font-family="system-ui,sans-serif" font-size="13" fill="#0f172a">
+<rect x="20" y="62" width="166" height="296" rx="10" fill="#e2e8f0"/><text x="32" y="86" font-weight="700">To do</text>
+<rect x="30" y="98" width="146" height="50" rx="7" fill="#fff"/><rect x="40" y="108" width="40" height="8" rx="4" fill="#fecaca"/><text x="40" y="136">Write copy</text>
+<rect x="30" y="158" width="146" height="50" rx="7" fill="#fff"/><rect x="40" y="168" width="40" height="8" rx="4" fill="#bfdbfe"/><text x="40" y="196">Pick colours</text>
+<rect x="30" y="218" width="146" height="40" rx="7" fill="#fff"/><text x="40" y="243">Order domain</text>
+<rect x="197" y="62" width="166" height="296" rx="10" fill="#e2e8f0"/><text x="209" y="86" font-weight="700">Doing</text>
+<rect x="207" y="98" width="146" height="50" rx="7" fill="#fff"/><rect x="217" y="108" width="40" height="8" rx="4" fill="#fef08a"/><text x="217" y="136">Design home page</text>
+<rect x="207" y="158" width="146" height="40" rx="7" fill="#fff"/><text x="217" y="183">Set up analytics</text>
+<rect x="374" y="62" width="166" height="296" rx="10" fill="#e2e8f0"/><text x="386" y="86" font-weight="700">Done</text>
+<rect x="384" y="98" width="146" height="50" rx="7" fill="#fff"/><rect x="394" y="108" width="40" height="8" rx="4" fill="#bbf7d0"/><text x="394" y="136">Privacy policy</text>
+<rect x="384" y="158" width="146" height="40" rx="7" fill="#fff"/><text x="394" y="183">Favicon</text>
+<rect x="384" y="208" width="146" height="40" rx="7" fill="#fff"/><text x="394" y="233">Sitemap</text>
+</g></svg>

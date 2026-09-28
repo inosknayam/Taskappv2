@@ -3,6 +3,8 @@
 A Trello-style Kanban task manager: boards → lists → cards, drag-and-drop, auth.
 Frontend and backend live in one repo and start together from **one terminal** with `npm run dev`.
 
+> **Implementation note:** the backend was built with zero dependencies instead of Express/Prisma/zod/concurrently. It uses Node's built-in `http`, `node:sqlite` and `crypto`, `shared/validation.js`, and `scripts/dev.mjs`. The frontend uses plain CSS (not Tailwind) and native HTML5 drag and drop, with Move controls for touch and keyboard. Same features, fewer moving parts. See README.md.
+
 ---
 
 ## 1. Tech stack

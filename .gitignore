@@ -1,0 +1,11 @@
+node_modules/
+client/dist/
+server/data/
+*.db
+*.db-*
+.env
+.env.*
+!.env.example
+.lighthouseci/
+*.log
+.DS_Store
