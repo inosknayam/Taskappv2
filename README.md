@@ -85,6 +85,7 @@ All endpoints are under `/api`, send and receive JSON, and use cookie sessions. 
 
 ## Documentation
 
+- [Deploy to Hostinger](docs/DEPLOY_HOSTINGER.md): step-by-step hPanel guide for Business hosting
 - [Launch checklist](docs/LAUNCH_CHECKLIST.md): all 20 launch items and how each is verified
 - [Privacy Policy](docs/PRIVACY_POLICY.md)
 - [Terms & Conditions](docs/TERMS_AND_CONDITIONS.md)
