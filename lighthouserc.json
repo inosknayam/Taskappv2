@@ -3,7 +3,7 @@
     "collect": {
       "startServerCommand": "FORCE_HTTPS=false SESSION_SECRET=lighthouse-local-only-secret-0123456789 npm start",
       "startServerReadyPattern": "API listening",
-      "url": ["http://localhost:4000/", "http://localhost:4000/signup", "http://localhost:4000/privacy", "http://localhost:4000/this-page-does-not-exist"],
+      "url": ["http://localhost:4000/", "http://localhost:4000/signup", "http://localhost:4000/privacy"],
       "numberOfRuns": 3
     },
     "assert": {

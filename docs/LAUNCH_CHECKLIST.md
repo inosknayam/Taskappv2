@@ -18,7 +18,7 @@ Each item links to where it's implemented and how it's verified. **Auto** means 
 | 12 | Page load speed check | ✅ | code splitting, Brotli, caching, `lighthouserc.json` | Auto: `npm run check:bundle`, `npm run lighthouse` |
 | 13 | Colour contrast fixes | ✅ | tokens in `styles.css` | Auto: `npm run check:contrast` (29 pairs, WCAG AA) |
 | 14 | Mobile responsiveness | ✅ | mobile-first CSS, scroll-snap lists, Move controls for touch | Manual: 360px, 768px and 1280px, plus a real phone |
-| 15 | Custom 404 page | ✅ | `NotFound.jsx`, real 404 status in `server/src/static.js`, JSON 404 for `/api/*` | Auto: API test; Lighthouse on a 404 URL |
+| 15 | Custom 404 page | ✅ | `NotFound.jsx`, real 404 status in `server/src/static.js`, JSON 404 for `/api/*` | Auto: `server/test/static.test.js` |
 | 16 | Broken link fixes | ✅ | all internal links use real routes | Auto: `npm run check:links` (`--external` for outbound links) |
 | 17 | Form validation | ✅ | `shared/validation.js` on client and server, [FORMS_AND_SPAM.md](FORMS_AND_SPAM.md) | Auto: `server/test/api.test.js` |
 | 18 | Spam protection | ✅ | honeypot + time trap + rate limits | Auto: `server/test/api.test.js` |

@@ -27,7 +27,7 @@ Built in:
 ```bash
 npm run build
 npm run check:bundle   # gzip size budget per JS/CSS file (JS ≤ 90 KB, CSS ≤ 15 KB)
-npm run lighthouse     # Lighthouse CI, 3 runs each on /, /signup, /privacy and a 404 URL
+npm run lighthouse     # Lighthouse CI, 3 runs each on /, /signup and /privacy
 ```
 
 `lighthouserc.json` fails the run unless:
