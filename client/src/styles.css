@@ -35,7 +35,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--color-focus); outline-offset: 2px; }
 
 .app-shell { min-height: 100vh; display: flex; flex-direction: column; }
-main { flex: 1; padding-block: 2rem; }
+/* Reserve a full viewport so lazy-loaded pages never push the footer into view (prevents layout shift / CLS). */
+main { flex: 1; padding-block: 2rem; min-height: 100vh; }
 main:focus { outline: none; }
 .container { width: 100%; max-width: 1120px; margin-inline: auto; padding-inline: 1rem; }
 .narrow { max-width: 640px; }
@@ -126,7 +127,7 @@ fieldset { border: 0; padding: 0; margin: 0 0 1rem; }
 .danger-zone { margin-top: 3rem; }
 
 /* Board view */
-.board-page { background: var(--board-color); margin-block: -2rem; min-height: calc(100vh - 60px - 58px); padding-block: 1rem 2rem; }
+.board-page { background: var(--board-color); margin-block: -2rem; min-height: 100vh; padding-block: 1rem 2rem; }
 .board-header { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; justify-content: space-between; padding-inline: 1rem; margin-bottom: 1rem; }
 .board-title { margin: 0; font-size: 1.4rem; }
 .board-title .inline-edit { color: #fff; }
