@@ -202,11 +202,12 @@ export default function Board() {
                     <button type="button" className="card" onClick={() => setOpenCardId(card.id)}>
                       <LabelDots labels={card.labels} />
                       <span className="card-title">{card.title}</span>
-                      {(card.dueDate || card.checklist.length > 0 || card.description) && (
+                      {(card.dueDate || card.checklist.length > 0 || card.description || card.attachments?.length > 0) && (
                         <span className="card-meta">
                           {card.dueDate && <span>Due {new Date(`${card.dueDate}T00:00`).toLocaleDateString()}</span>}
                           {card.checklist.length > 0 && <span>{done}/{card.checklist.length} done</span>}
                           {card.description && <span>Has description</span>}
+                          {card.attachments?.length > 0 && <span>{card.attachments.length} {card.attachments.length === 1 ? 'attachment' : 'attachments'}</span>}
                         </span>
                       )}
                     </button>
@@ -233,6 +234,7 @@ export default function Board() {
           onSave={(patch) => saveCard(openCard.id, patch)}
           onMove={(listId, index) => moveCard(openCard.id, listId, index)}
           onDelete={() => deleteCard(openCard.id)}
+          onAttachmentsChange={(attachments) => setLists((ls) => ls.map((l) => ({ ...l, cards: l.cards.map((c) => (c.id === openCard.id ? { ...c, attachments } : c)) })))}
         />
       )}
 

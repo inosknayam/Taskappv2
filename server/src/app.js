@@ -9,6 +9,7 @@ import { registerBoardRoutes } from './routes/boards.js';
 import { registerContactRoutes } from './routes/contact.js';
 import { registerPasswordRoutes } from './routes/password.js';
 import { registerMemberRoutes } from './routes/members.js';
+import { registerAttachmentRoutes, purgeDeletedFiles } from './routes/attachments.js';
 
 export function createApp({ db, config, serveClient = config.isProd, mailer = createMailer(config) }) {
   const router = createRouter();
@@ -17,6 +18,8 @@ export function createApp({ db, config, serveClient = config.isProd, mailer = cr
   registerContactRoutes(router);
   registerPasswordRoutes(router);
   registerMemberRoutes(router);
+  registerAttachmentRoutes(router);
+  purgeDeletedFiles(db, config);
   const serveStatic = serveClient ? createStaticHandler(config.clientDist) : null;
 
   async function handleApi(req, res, pathname) {
@@ -24,7 +27,7 @@ export function createApp({ db, config, serveClient = config.isProd, mailer = cr
     if (!match) throw new HttpError(404, 'API route not found.');
     if (match.methodNotAllowed) throw new HttpError(405, 'Method not allowed.');
     checkCsrf(req);
-    const body = await readJson(req);
+    const body = match.rawBody ? {} : await readJson(req);
     const session = currentSession(req, config.sessionSecret);
     const row = session ? db.prepare('SELECT id, name, email, password_changed_at FROM users WHERE id = ?').get(session.uid) : null;
     // A password change (e.g. via reset) logs out every session issued before it.
@@ -32,6 +35,8 @@ export function createApp({ db, config, serveClient = config.isProd, mailer = cr
     const ctx = { req, res, params: match.params, body, db, config, user, mailer };
     let out;
     for (const handler of match.handlers) out = await handler(ctx);
+    if (req.method === 'DELETE') purgeDeletedFiles(db, config);
+    if (out?.handled) return; // the handler streamed its own response (file downloads)
     const { status = 200, body: resBody, headers = {} } = out || {};
     sendJson(res, status, status === 204 ? undefined : resBody, headers);
   }

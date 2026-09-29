@@ -62,6 +62,22 @@ export function openDatabase(file) {
       PRIMARY KEY (board_id, user_id)
     );
     CREATE INDEX IF NOT EXISTS idx_board_members_user ON board_members(user_id);
+    CREATE TABLE IF NOT EXISTS attachments (
+      id INTEGER PRIMARY KEY,
+      card_id INTEGER NOT NULL REFERENCES cards(id) ON DELETE CASCADE,
+      uploader_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+      stored_name TEXT NOT NULL UNIQUE,
+      original_name TEXT NOT NULL,
+      mime TEXT NOT NULL,
+      size INTEGER NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE INDEX IF NOT EXISTS idx_attachments_card ON attachments(card_id);
+    -- Files whose rows were deleted (directly or via card/list/board/account cascades) are queued
+    -- here and removed from disk by purgeDeletedFiles().
+    CREATE TABLE IF NOT EXISTS file_trash (stored_name TEXT PRIMARY KEY);
+    CREATE TRIGGER IF NOT EXISTS trg_attachments_trash AFTER DELETE ON attachments
+      BEGIN INSERT OR IGNORE INTO file_trash (stored_name) VALUES (OLD.stored_name); END;
     CREATE INDEX IF NOT EXISTS idx_boards_user ON boards(user_id);
     CREATE INDEX IF NOT EXISTS idx_lists_board ON lists(board_id, position);
     CREATE INDEX IF NOT EXISTS idx_cards_list ON cards(list_id, position);

@@ -2,6 +2,7 @@ import { validateBoard, validateCard, validateList } from '../../../shared/valid
 import { HttpError } from '../http.js';
 import { requireUser } from '../auth.js';
 import { transaction } from '../db.js';
+import { cardAttachments, mapAttachment } from './attachments.js';
 
 function id(value) {
   const n = Number(value);
@@ -9,8 +10,9 @@ function id(value) {
   return n;
 }
 
-function mapCard(c) {
+function mapCard(c, attachments = []) {
   return {
+    attachments,
     id: c.id, listId: c.list_id, title: c.title, description: c.description, dueDate: c.due_date,
     labels: JSON.parse(c.labels), checklist: JSON.parse(c.checklist), position: c.position,
   };
@@ -38,7 +40,7 @@ function listAccess(db, userId, listId, need) {
   return list;
 }
 
-function cardAccess(db, userId, cardId, need) {
+export function cardAccess(db, userId, cardId, need) {
   const card = db.prepare('SELECT c.*, l.board_id FROM cards c JOIN lists l ON l.id = c.list_id WHERE c.id = ?').get(id(cardId));
   if (!card) throw new HttpError(404, 'Card not found.');
   boardAccess(db, userId, card.board_id, need);
@@ -65,11 +67,18 @@ function clampIndex(index, length) {
 function boardPayload(db, board, role) {
   const lists = db.prepare('SELECT * FROM lists WHERE board_id = ? ORDER BY position').all(board.id);
   const cards = db.prepare(`SELECT c.* FROM cards c JOIN lists l ON l.id = c.list_id WHERE l.board_id = ? ORDER BY c.position`).all(board.id);
+  const files = db.prepare(`SELECT a.* FROM attachments a JOIN cards c ON c.id = a.card_id JOIN lists l ON l.id = c.list_id
+    WHERE l.board_id = ? ORDER BY a.id`).all(board.id);
+  const byCard = new Map();
+  for (const f of files) {
+    if (!byCard.has(f.card_id)) byCard.set(f.card_id, []);
+    byCard.get(f.card_id).push(mapAttachment(f));
+  }
   return {
     id: board.id, title: board.title, color: board.color, role,
     owner: db.prepare('SELECT name FROM users WHERE id = (SELECT user_id FROM boards WHERE id = ?)').get(board.id)?.name,
     memberCount: db.prepare('SELECT COUNT(*) AS n FROM board_members WHERE board_id = ?').get(board.id).n,
-    lists: lists.map((l) => ({ id: l.id, title: l.title, position: l.position, cards: cards.filter((c) => c.list_id === l.id).map(mapCard) })),
+    lists: lists.map((l) => ({ id: l.id, title: l.title, position: l.position, cards: cards.filter((c) => c.list_id === l.id).map((c) => mapCard(c, byCard.get(c.id))) })),
   };
 }
 
@@ -191,7 +200,7 @@ export function registerBoardRoutes(router) {
         }
       }
     });
-    return { body: { card: mapCard(ctx.db.prepare('SELECT * FROM cards WHERE id = ?').get(card.id)) } };
+    return { body: { card: mapCard(ctx.db.prepare('SELECT * FROM cards WHERE id = ?').get(card.id), cardAttachments(ctx.db, card.id)) } };
   });
 
   router.delete('/api/cards/:id', (ctx) => {

@@ -26,6 +26,9 @@ export const config = {
   host: env.HOST || (isProd ? '0.0.0.0' : '127.0.0.1'),
   sessionSecret: env.SESSION_SECRET || 'dev-only-insecure-secret-change-me-please',
   databaseFile: env.DATABASE_FILE || path.join(ROOT, 'server/data/taskapp.db'),
+  // Card attachments are stored here (keep it outside the deploy folder in production).
+  uploadDir: env.UPLOAD_DIR || path.join(ROOT, 'server/data/uploads'),
+  maxUploadMb: Number(env.MAX_UPLOAD_MB) || 10,
   // Public URL used in emails (password-reset links). Falls back to the frontend's public URL.
   siteUrl: (env.SITE_URL || env.VITE_PUBLIC_SITE_URL || 'http://localhost:5173').replace(/\/$/, ''),
   smtp: {
