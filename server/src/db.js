@@ -54,6 +54,14 @@ export function openDatabase(file) {
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
     CREATE INDEX IF NOT EXISTS idx_password_resets_user ON password_resets(user_id);
+    CREATE TABLE IF NOT EXISTS board_members (
+      board_id INTEGER NOT NULL REFERENCES boards(id) ON DELETE CASCADE,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      role TEXT NOT NULL CHECK (role IN ('editor', 'viewer')),
+      added_at TEXT NOT NULL DEFAULT (datetime('now')),
+      PRIMARY KEY (board_id, user_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_board_members_user ON board_members(user_id);
     CREATE INDEX IF NOT EXISTS idx_boards_user ON boards(user_id);
     CREATE INDEX IF NOT EXISTS idx_lists_board ON lists(board_id, position);
     CREATE INDEX IF NOT EXISTS idx_cards_list ON cards(list_id, position);

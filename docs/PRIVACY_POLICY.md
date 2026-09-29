@@ -12,6 +12,7 @@ TaskApp is operated by **[Company name]**, **[Registered address]**. We are the 
 
 - **Account data**: your name, email address and a securely hashed version of your password (we never store your password itself).
 - **Content you create**: boards, lists, cards, descriptions, due dates, labels and checklists.
+- **Sharing**: when you share a board, the people you share it with can see its content and the name and email address of everyone with access. When someone shares a board with you, your name and email are visible to its other members.
 - **Contact messages**: the name, email address and message you send through the contact form.
 - **Technical data**: your IP address is processed briefly to protect the service against abuse (rate limiting). It is held in memory only and is not stored in our database.
 - **Analytics data (only with your consent)**: anonymous, aggregated usage statistics such as pages visited, referrer, browser type and country. See [Cookies and analytics](#cookies).

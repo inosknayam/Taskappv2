@@ -5,7 +5,7 @@ import FormAlert from './FormAlert.jsx';
 import { labelName } from './Labels.jsx';
 
 // Card details in a native <dialog>: focus is trapped and Escape closes it.
-export default function CardModal({ card, lists, onClose, onSave, onMove, onDelete }) {
+export default function CardModal({ card, lists, readOnly = false, onClose, onSave, onMove, onDelete }) {
   const dialog = useRef(null);
   const titleId = useId();
   const [values, setValues] = useState(() => ({
@@ -53,11 +53,13 @@ export default function CardModal({ card, lists, onClose, onSave, onMove, onDele
       onClick={(e) => { if (e.target === dialog.current) onClose(); }}>
       <form onSubmit={save} noValidate>
         <div className="modal-header">
-          <h2 id={titleId}>Edit card</h2>
+          <h2 id={titleId}>{readOnly ? 'Card details' : 'Edit card'}</h2>
           <button type="button" className="icon-button" onClick={onClose} aria-label="Close">×</button>
         </div>
         <p className="modal-sub">In list <strong>{currentList.title}</strong></p>
         <FormAlert message={formError} />
+        {/* Viewers see the same fields, disabled. */}
+        <fieldset className="plain-fieldset" disabled={readOnly}>
         <FormField label="Title" name="title" value={values.title} onChange={(e) => set('title', e.target.value)} error={errors.title} maxLength={200} required />
         <FormField as="textarea" label="Description" name="description" rows={5} value={values.description} onChange={(e) => set('description', e.target.value)} error={errors.description} maxLength={5000} />
         <FormField label="Due date" name="dueDate" type="date" value={values.dueDate} onChange={(e) => set('dueDate', e.target.value)} error={errors.dueDate} />
@@ -93,7 +95,9 @@ export default function CardModal({ card, lists, onClose, onSave, onMove, onDele
           </div>
           {errors.checklist && <p className="field-error">{errors.checklist}</p>}
         </fieldset>
+        </fieldset>
 
+        {!readOnly && (
         <fieldset className="move-card">
           <legend>Move card</legend>
           <div className="inline-row">
@@ -110,11 +114,14 @@ export default function CardModal({ card, lists, onClose, onSave, onMove, onDele
             <button type="button" className="btn btn-secondary btn-sm" onClick={() => onMove(Number(moveTo.listId), moveTo.index)}>Move</button>
           </div>
         </fieldset>
+        )}
 
+        {!readOnly && (
         <div className="modal-actions">
           <button type="button" className="btn btn-danger" onClick={() => { if (window.confirm('Delete this card?')) onDelete(); }}>Delete card</button>
           <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving…' : 'Save changes'}</button>
         </div>
+        )}
       </form>
     </dialog>
   );
