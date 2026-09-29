@@ -8,6 +8,7 @@ import { registerAuthRoutes } from './routes/auth.js';
 import { registerBoardRoutes } from './routes/boards.js';
 import { registerContactRoutes } from './routes/contact.js';
 import { registerPasswordRoutes } from './routes/password.js';
+import { registerMemberRoutes } from './routes/members.js';
 
 export function createApp({ db, config, serveClient = config.isProd, mailer = createMailer(config) }) {
   const router = createRouter();
@@ -15,6 +16,7 @@ export function createApp({ db, config, serveClient = config.isProd, mailer = cr
   registerBoardRoutes(router);
   registerContactRoutes(router);
   registerPasswordRoutes(router);
+  registerMemberRoutes(router);
   const serveStatic = serveClient ? createStaticHandler(config.clientDist) : null;
 
   async function handleApi(req, res, pathname) {

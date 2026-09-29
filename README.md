@@ -1,6 +1,6 @@
 # TaskApp
 
-A Trello-style Kanban task manager. Organise projects into **boards → lists → cards**, drag cards between lists, and add descriptions, due dates, labels and checklists.
+A Trello-style Kanban task manager. Organise projects into **boards → lists → cards**, share boards with other users as editors or viewers, drag cards between lists, and add descriptions, due dates, labels and checklists.
 
 - **Frontend:** React 18 + Vite + React Router (`client/`)
 - **Backend:** zero-dependency Node.js API using built-in `http`, `node:sqlite` and `crypto` (`server/`)
@@ -77,6 +77,8 @@ All endpoints are under `/api`, send and receive JSON, and use cookie sessions. 
 | POST | `/auth/forgot-password`, `/auth/reset-password` | email a reset link / set a new password |
 | GET / POST | `/boards` | list / create (creates To do, Doing, Done) |
 | GET / PATCH / DELETE | `/boards/:id` | board with lists and cards |
+| GET / POST | `/boards/:id/members` | list people with access / share by email (owner) |
+| PATCH / DELETE | `/boards/:id/members/:userId` | change role (owner) / remove, or leave the board yourself |
 | POST | `/boards/:id/lists` | add list |
 | PATCH / DELETE | `/lists/:id` | rename, or move with `{ index }` |
 | POST | `/lists/:id/cards` | add card |

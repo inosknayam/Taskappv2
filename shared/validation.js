@@ -129,3 +129,17 @@ export function validateResetPassword(input = {}) {
   if (!errors.password && data.confirmPassword !== data.password) errors.confirmPassword = 'Passwords do not match.';
   return result(data, errors);
 }
+
+export const SHARE_ROLES = ['editor', 'viewer'];
+
+export function validateShare(input = {}, { partial = false } = {}) {
+  const data = {};
+  const errors = {};
+  if (!partial) {
+    data.email = str(input.email).toLowerCase();
+    validateEmail(errors, data.email);
+  }
+  data.role = str(input.role) || 'editor';
+  if (!SHARE_ROLES.includes(data.role)) errors.role = 'Choose Editor or Viewer.';
+  return result(data, errors);
+}

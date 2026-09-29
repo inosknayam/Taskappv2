@@ -43,7 +43,23 @@ Set on every response (`securityHeaders`):
 - Passwords are hashed with **scrypt** (N=16384, r=8, p=1, 16-byte random salt) and compared in constant time.
 - The session token is an HMAC-SHA256 signed payload with a 7-day expiry, in a cookie set `HttpOnly; SameSite=Lax; Secure`.
 - Login runs a dummy hash for unknown emails, so response timing doesn't reveal which accounts exist. The error message is always "Incorrect email or password".
-- Every board, list and card query checks that the item belongs to the logged-in user. Other users' IDs return 404.
+- **Board access:** every board, list and card request checks the caller's role on that board (`boardAccess` in `server/src/routes/boards.js`).
+  - People with no access get **404**, so board IDs can't be probed.
+  - People with too low a role get **403**.
+
+| Action | Owner | Editor | Viewer |
+|---|---|---|---|
+| View board, lists, cards and members | ✅ | ✅ | ✅ |
+| Add, edit, move or delete lists and cards; rename or recolour the board | ✅ | ✅ | ❌ |
+| Share, change roles, remove members | ✅ | ❌ | ❌ |
+| Delete the board | ✅ | ❌ | ❌ |
+| Leave the board | – | ✅ | ✅ |
+
+- **Sharing:**
+  - Only works with existing accounts, and is rate-limited to 30 share requests per IP every 15 minutes.
+  - A board can have at most 50 members.
+  - The invitee gets a best-effort notification email.
+  - Deleting an account removes its memberships; deleting a board removes all of its shares.
 
 ## Password reset
 

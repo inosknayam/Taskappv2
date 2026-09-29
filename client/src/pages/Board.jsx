@@ -4,6 +4,7 @@ import { api } from '../lib/api.js';
 import { useSeo } from '../lib/seo.js';
 import { trackEvent } from '../lib/analytics.js';
 import CardModal from '../components/CardModal.jsx';
+import ShareDialog from '../components/ShareDialog.jsx';
 import FormAlert from '../components/FormAlert.jsx';
 import InlineEdit from '../components/InlineEdit.jsx';
 import AddForm from '../components/AddForm.jsx';
@@ -40,6 +41,7 @@ export default function Board() {
   const [error, setError] = useState('');
   const [notFound, setNotFound] = useState(false);
   const [openCardId, setOpenCardId] = useState(null);
+  const [sharing, setSharing] = useState(false);
   const [query, setQuery] = useState('');
   const [announcement, setAnnouncement] = useState('');
   const drag = useRef(null);
@@ -89,6 +91,8 @@ export default function Board() {
   }
   if (!board) return <div className="container">{error ? <FormAlert message={error} /> : <p role="status">Loading board…</p>}</div>;
 
+  const canEdit = board.role !== 'viewer';
+  const isOwner = board.role === 'owner';
   const q = query.trim().toLowerCase();
   const visible = (card) => !q || card.title.toLowerCase().includes(q) || card.labels.some((l) => labelName(l).toLowerCase().includes(q));
   const openCard = board.lists.flatMap((l) => l.cards).find((c) => c.id === openCardId);
@@ -151,23 +155,33 @@ export default function Board() {
   return (
     <div className="board-page" style={{ '--board-color': board.color }}>
       <div className="board-header">
-        <h1 className="board-title"><InlineEdit value={board.title} label="Board title" maxLength={100} onSave={renameBoard} /></h1>
+        <h1 className="board-title">
+          {canEdit ? <InlineEdit value={board.title} label="Board title" maxLength={100} onSave={renameBoard} /> : <span className="board-title-static">{board.title}</span>}
+          {!isOwner && <span className="board-badge">{board.role === 'viewer' ? 'View only' : 'Editor'} · shared by {board.owner}</span>}
+        </h1>
         <div className="board-tools">
           <label htmlFor="card-search" className="visually-hidden">Filter cards</label>
           <input id="card-search" type="search" placeholder="Filter cards…" value={query} onChange={(e) => setQuery(e.target.value)} />
-          <button type="button" className="btn btn-on-dark" onClick={deleteBoard}>Delete board</button>
+          <button type="button" className="btn btn-on-dark" onClick={() => setSharing(true)}>
+            {isOwner ? 'Share' : 'Members'}{board.memberCount > 0 ? ` (${board.memberCount + 1})` : ''}
+          </button>
+          {isOwner && <button type="button" className="btn btn-on-dark" onClick={deleteBoard}>Delete board</button>}
         </div>
       </div>
       {error && <div className="container"><FormAlert message={error} /></div>}
       <p className="visually-hidden" aria-live="polite">{announcement}</p>
+      {!canEdit && <p className="readonly-note">You can view this board but not change it.</p>}
 
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- mouse drag and drop; keyboard/touch users use the Move controls */}
       <ol className="lists" onDragOver={onDragOver} onDrop={onDropOnBoard} aria-label="Lists">
         {board.lists.map((list, listIndex) => (
           <li key={list.id} className="list" data-list data-id={list.id}>
             {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions -- drag handle; keyboard/touch users use Move left/right in the list menu */}
-            <div className="list-header" draggable onDragStart={(e) => onListDragStart(e, list)} onDragEnd={() => { drag.current = null; }}>
-              <h2 className="list-title"><InlineEdit value={list.title} label="List title" maxLength={100} onSave={(t) => renameList(list, t)} /></h2>
+            <div className="list-header" draggable={canEdit} onDragStart={(e) => onListDragStart(e, list)} onDragEnd={() => { drag.current = null; }}>
+              <h2 className="list-title">
+                {canEdit ? <InlineEdit value={list.title} label="List title" maxLength={100} onSave={(t) => renameList(list, t)} /> : <span className="list-title-static">{list.title}</span>}
+              </h2>
+              {canEdit && (
               <details className="list-menu">
                 <summary aria-label={`Actions for list ${list.title}`}>⋯</summary>
                 <div className="menu-panel">
@@ -176,6 +190,7 @@ export default function Board() {
                   <button type="button" className="danger" onClick={() => deleteList(list)}>Delete list</button>
                 </div>
               </details>
+              )}
             </div>
             {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- mouse drag and drop; keyboard/touch users use the Move controls */}
             <ul className="cards" onDragOver={onDragOver} onDrop={(e) => onDropOnList(e, list)} aria-label={`Cards in ${list.title}`}>
@@ -183,7 +198,7 @@ export default function Board() {
                 const done = card.checklist.filter((i) => i.done).length;
                 return (
                   // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- mouse drag and drop; keyboard/touch users use the Move controls
-                  <li key={card.id} data-card data-id={card.id} draggable onDragStart={(e) => onCardDragStart(e, card)} onDragEnd={() => { drag.current = null; }}>
+                  <li key={card.id} data-card data-id={card.id} draggable={canEdit} onDragStart={(e) => onCardDragStart(e, card)} onDragEnd={() => { drag.current = null; }}>
                     <button type="button" className="card" onClick={() => setOpenCardId(card.id)}>
                       <LabelDots labels={card.labels} />
                       <span className="card-title">{card.title}</span>
@@ -199,22 +214,34 @@ export default function Board() {
                 );
               })}
             </ul>
-            <AddForm label="Add a card" placeholder="Card title" maxLength={200} onAdd={(t) => addCard(list, t)} />
+            {canEdit && <AddForm label="Add a card" placeholder="Card title" maxLength={200} onAdd={(t) => addCard(list, t)} />}
           </li>
         ))}
-        <li className="list list-add">
-          <AddForm label="Add a list" placeholder="List title" maxLength={100} onAdd={addList} />
-        </li>
+        {canEdit && (
+          <li className="list list-add">
+            <AddForm label="Add a list" placeholder="List title" maxLength={100} onAdd={addList} />
+          </li>
+        )}
       </ol>
 
       {openCard && (
         <CardModal
           card={openCard}
           lists={board.lists}
+          readOnly={!canEdit}
           onClose={() => setOpenCardId(null)}
           onSave={(patch) => saveCard(openCard.id, patch)}
           onMove={(listId, index) => moveCard(openCard.id, listId, index)}
           onDelete={() => deleteCard(openCard.id)}
+        />
+      )}
+
+      {sharing && (
+        <ShareDialog
+          board={board}
+          onClose={() => setSharing(false)}
+          onLeft={() => navigate('/boards', { replace: true })}
+          onMembersChange={(memberCount) => setBoard((b) => ({ ...b, memberCount }))}
         />
       )}
     </div>

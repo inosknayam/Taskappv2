@@ -59,22 +59,36 @@ export default function Boards() {
       <h2>Your boards</h2>
       {loadError && <FormAlert message={loadError} />}
       {!boards && !loadError && <p role="status">Loading boards…</p>}
-      {boards?.length === 0 && <p>You don&apos;t have any boards yet. Create your first one above.</p>}
-      {boards?.length > 0 && (
-        <ul className="board-grid">
-          {boards.map((b) => (
-            <li key={b.id}>
-              <Link to={`/boards/${b.id}`} className="board-tile" style={{ background: b.color }}>
-                <span className="board-tile-title">{b.title}</span>
-                <span className="board-tile-meta">{b.cardCount} {b.cardCount === 1 ? 'card' : 'cards'}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+      {boards && <BoardGrid boards={boards.filter((b) => b.role === 'owner')} empty="You don't have any boards yet. Create your first one above." />}
+
+      {boards?.some((b) => b.role !== 'owner') && (
+        <>
+          <h2>Shared with you</h2>
+          <BoardGrid boards={boards.filter((b) => b.role !== 'owner')} />
+        </>
       )}
       <p className="danger-zone">
         <button type="button" className="link-button danger" onClick={onDeleteAccount}>Delete my account</button>
       </p>
     </div>
+  );
+}
+
+function BoardGrid({ boards, empty }) {
+  if (!boards.length) return empty ? <p>{empty}</p> : null;
+  return (
+    <ul className="board-grid">
+      {boards.map((b) => (
+        <li key={b.id}>
+          <Link to={`/boards/${b.id}`} className="board-tile" style={{ background: b.color }}>
+            <span className="board-tile-title">{b.title}</span>
+            <span className="board-tile-meta">
+              {b.cardCount} {b.cardCount === 1 ? 'card' : 'cards'}
+              {b.role !== 'owner' && ` · ${b.role === 'viewer' ? 'View only' : 'Editor'} · by ${b.owner}`}
+            </span>
+          </Link>
+        </li>
+      ))}
+    </ul>
   );
 }
