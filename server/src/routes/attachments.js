@@ -79,11 +79,17 @@ function saveUpload(req, dest, maxBytes, mime) {
     const fail = (err) => {
       if (failed) return;
       failed = true;
-      req.unpipe?.(out);
-      out.destroy();
-      rmSync(dest, { force: true });
-      req.resume();
-      reject(err);
+      // The file may still be opening, so delete it only after the stream has fully closed.
+      const cleanup = () => {
+        rmSync(dest, { force: true });
+        req.resume();
+        reject(err);
+      };
+      if (out.closed) cleanup();
+      else {
+        out.once('close', cleanup);
+        out.destroy();
+      }
     };
     req.on('data', (chunk) => {
       size += chunk.length;
