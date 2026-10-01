@@ -3,9 +3,10 @@ import { LABELS, validateCard } from '../../../shared/validation.js';
 import FormField from './FormField.jsx';
 import FormAlert from './FormAlert.jsx';
 import { labelName } from './Labels.jsx';
+import Attachments from './Attachments.jsx';
 
 // Card details in a native <dialog>: focus is trapped and Escape closes it.
-export default function CardModal({ card, lists, readOnly = false, onClose, onSave, onMove, onDelete }) {
+export default function CardModal({ card, lists, readOnly = false, onClose, onSave, onMove, onDelete, onAttachmentsChange }) {
   const dialog = useRef(null);
   const titleId = useId();
   const [values, setValues] = useState(() => ({
@@ -96,6 +97,9 @@ export default function CardModal({ card, lists, readOnly = false, onClose, onSa
           {errors.checklist && <p className="field-error">{errors.checklist}</p>}
         </fieldset>
         </fieldset>
+
+        {/* Attachments save immediately, independently of "Save changes". */}
+        <Attachments cardId={card.id} attachments={card.attachments || []} readOnly={readOnly} onChange={onAttachmentsChange} />
 
         {!readOnly && (
         <fieldset className="move-card">

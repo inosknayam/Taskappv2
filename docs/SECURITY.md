@@ -84,7 +84,26 @@ Set on every response (`securityHeaders`):
   - It refuses to send credentials over an unencrypted connection.
   - Configure it with `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` and `MAIL_FROM`, all **server-only** values. Without `SMTP_HOST`, emails are printed to the server console.
 
-## CSRF
+## File attachments
+
+`server/src/routes/attachments.js`
+
+- **Allowed types (allow-list):**
+  - PNG, JPEG, GIF, WebP, PDF, TXT, CSV, DOCX, XLSX, PPTX and ZIP;
+  - SVG, HTML and other formats that can run scripts are rejected.
+- **Content check:** the first bytes of each file must match its declared type (for example, a PNG must start with the PNG signature), so a renamed HTML page or executable is rejected. Text files may not contain NUL bytes.
+- **Size and count limits:**
+  - `MAX_UPLOAD_MB` per file, 10 MB by default. The limit is checked against `Content-Length` and again while streaming, so oversized uploads are cut off and never fully written;
+  - at most 20 attachments per card;
+  - 60 uploads per IP every 15 minutes.
+- **Storage:**
+  - files are saved under random 32-character hex names in `UPLOAD_DIR`, outside the web root and never served as static files;
+  - original file names are cleaned: paths, control characters and header-breaking characters are stripped.
+- **Downloads go through the API and check board access:**
+  - viewers can download, editors and owners can also upload and delete, and strangers get 404;
+  - responses send `X-Content-Type-Options: nosniff` and a `sandbox` Content-Security-Policy;
+  - only images are shown inline, and everything else is forced to download.
+- **Cleanup:** a database trigger queues a file for deletion whenever its attachment row is removed. That includes rows removed because a card, list, board or account was deleted. The queue is purged after every delete request and at startup.
 
 - The cookie is `SameSite=Lax`.
 - Every non-GET API request must send `X-Requested-With: XMLHttpRequest`. Cross-site HTML forms cannot set custom headers, and CORS is not enabled, so other origins cannot send it either.

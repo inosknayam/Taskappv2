@@ -58,6 +58,7 @@ export function serializeCookie(name, value, { maxAge, secure, httpOnly = true, 
 
 export function createRouter() {
   const routes = [];
+  // A route whose first handler has `rawBody = true` receives the unparsed request stream (uploads).
   const add = (method) => (pattern, ...handlers) => {
     const keys = [];
     const re = new RegExp('^' + pattern.replace(/:(\w+)/g, (_, k) => { keys.push(k); return '([^/]+)'; }) + '/?$');
@@ -73,7 +74,7 @@ export function createRouter() {
         pathMatched = true;
         if (r.method !== method) continue;
         const params = Object.fromEntries(r.keys.map((k, i) => [k, decodeURIComponent(m[i + 1])]));
-        return { handlers: r.handlers, params };
+        return { handlers: r.handlers, params, rawBody: Boolean(r.handlers[0].rawBody) };
       }
       return pathMatched ? { methodNotAllowed: true } : null;
     },

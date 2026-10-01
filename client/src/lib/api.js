@@ -25,3 +25,25 @@ export async function api(path, { method = 'GET', body } = {}) {
   if (!res.ok) throw new ApiError(res.status, data.error || 'Something went wrong.', data.fields || {});
   return data;
 }
+
+// Uploads a file as the raw request body (no multipart parsing needed on the server).
+export async function uploadFile(path, file) {
+  let res;
+  try {
+    res = await fetch(`/api${path}`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': file.type || 'application/octet-stream',
+        'X-File-Name': encodeURIComponent(file.name),
+      },
+      body: file,
+    });
+  } catch {
+    throw new ApiError(0, 'Network error. Check your connection and try again.');
+  }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new ApiError(res.status, data.error || 'Upload failed.', data.fields || {});
+  return data;
+}

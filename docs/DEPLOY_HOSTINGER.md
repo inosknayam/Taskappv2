@@ -76,9 +76,10 @@ The database is a single file. By default it's stored inside the app folder (`se
 1. Open **Files → File Manager** (or connect over SSH) and find your home directory, which usually looks like `/home/u123456789/`.
 2. Create a folder **outside** the website and app folders, e.g. `/home/u123456789/taskapp-data/`.
 3. Set `DATABASE_FILE=/home/u123456789/taskapp-data/taskapp.db`, using your real home path.
+   Also set `UPLOAD_DIR=/home/u123456789/taskapp-data/uploads` so card attachments survive redeploys too.
 4. After the first deploy, sign up once. Then check in File Manager that `taskapp.db` appeared in that folder.
 
-**Backups:** download `taskapp.db` regularly from File Manager. Also download the `taskapp.db-wal` file if it's there, preferably while the app is stopped.
+**Backups:** download `taskapp.db` and the `uploads` folder regularly from File Manager. Also download the `taskapp.db-wal` file if it's there, preferably while the app is stopped.
 
 ## 5. Deploy
 
@@ -122,6 +123,7 @@ The database is a single file. By default it's stored inside the app folder (`se
 | App crashes on start: `SESSION_SECRET must be set…` | Add `SESSION_SECRET` (32+ characters) and redeploy |
 | Page says "Client not built" | The build command didn't run `npm run build`. Check the build settings |
 | "Too many redirects" | See step 6.3 (`FORCE_HTTPS=false` plus hPanel's Force HTTPS) |
+| Attachments disappear after a deploy, or uploads fail | Set `UPLOAD_DIR` outside the app folder (step 4). Also check your plan's disk space in hPanel, because attachments count towards it |
 | Accounts disappear after a deploy | `DATABASE_FILE` is inside the app folder. See step 4 |
 | Social image or canonical links point to localhost | `VITE_PUBLIC_SITE_URL` wasn't set before the build. Set it and redeploy |
 | Password-reset email never arrives | Check the SMTP variables and the app log for `[mail]` errors. Check SPF/DKIM in hPanel → Emails, and look in the spam folder |
